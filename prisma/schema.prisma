@@ -1,0 +1,1044 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model cmi_Custom_insights {
+  cnewsid     Int      @id @default(autoincrement())
+  title       String   @db.Text
+  CustomName  String   @db.VarChar(300)
+  CatId       Int
+  CreatedDate DateTime @db.Date
+  IsActive    Int
+  Price_SUL   String   @db.VarChar(20)
+  Price_Multi String   @db.VarChar(20)
+  Price_CUL   String   @db.VarChar(20)
+
+  @@index([CatId], map: "CatId")
+  @@index([CustomName], map: "CustomName")
+  @@index([IsActive], map: "IsActive")
+  @@index([Price_CUL], map: "Price_CUL")
+  @@index([Price_Multi], map: "Price_Multi")
+  @@index([Price_SUL], map: "Price_SUL")
+}
+
+model cmi_admin {
+  id        Int    @id @default(autoincrement()) @db.UnsignedInt
+  username  String @db.VarChar(50)
+  password  String @db.VarChar(50)
+  role      String @db.VarChar(20)
+  FirstName String @db.VarChar(50)
+  LastName  String @db.VarChar(50)
+  email     String @default("0") @db.VarChar(100)
+  status    Int
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model cmi_alldatasfetchhj {
+  sid          Int    @id @default(autoincrement())
+  nameoffileds String @db.VarChar(200)
+  role         Int
+
+  @@index([nameoffileds], map: "nameoffileds")
+  @@index([role], map: "role")
+}
+
+model cmi_blockedemailsdomain {
+  bid         Int      @id @default(autoincrement())
+  emaildomain String   @db.VarChar(90)
+  blockeddate DateTime @default(now()) @db.DateTime(0)
+
+  @@index([emaildomain], map: "emaildomain")
+}
+
+model cmi_blockedmails {
+  eid   Int      @id @default(autoincrement())
+  email String   @db.VarChar(150)
+  date  DateTime @db.Date
+
+  @@index([email], map: "email")
+}
+
+model cmi_blogs_categories {
+  cbid     Int    @id @default(autoincrement())
+  cattitle String @db.VarChar(200)
+  caturl   String @db.VarChar(100)
+}
+
+model cmi_blogsinsights {
+  id             BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  authid         Int      @default(0)
+  pub_date       DateTime @default(dbgenerated("('0000-00-00')")) @db.Date
+  view_desc      String   @db.LongText
+  title          String   @db.Text
+  IsActive       Int      @default(1)
+  CatId          Int
+  newimg         String?  @db.VarChar(700)
+  blogthumb      String?  @db.VarChar(400)
+  CustomName     String   @default("") @db.VarChar(200)
+  ModifiedDate   DateTime @default(dbgenerated("('0000-00-00 00:00:00')")) @db.DateTime(0)
+  createddate    DateTime @default(dbgenerated("('0000-00-00 00:00:00')")) @db.DateTime(0)
+  prmetatitle    String?  @db.VarChar(400)
+  prmetadesc     String?  @db.Text
+  prmetakeywords String?  @db.Text
+  admin_id       Int      @default(0)
+  postview       Int      @default(0)
+
+  @@index([IsActive], map: "IsActive")
+  @@index([createddate], map: "createddate")
+  @@index([id], map: "id")
+  @@index([id, authid, CustomName], map: "id_2")
+  @@index([blogthumb(length: 333)], map: "newsthumb")
+  @@index([pub_date], map: "pub_date")
+}
+
+model cmi_category {
+  catId          Int       @id @default(autoincrement()) @db.UnsignedInt
+  parent_id      Int
+  sort           Int
+  catName        String    @db.VarChar(150)
+  catDesc        String?   @db.Text
+  catDescSmall   String    @db.Text
+  CustomName     String    @db.VarChar(200)
+  IsActive       String    @default("1") @db.VarChar(5)
+  CreatedDate    DateTime? @db.DateTime(0)
+  ModifiedDate   DateTime? @db.DateTime(0)
+  metatitle      String?   @db.VarChar(200)
+  metadesc       String?   @db.VarChar(250)
+  metakey        String?   @db.Text
+  CatImg         String?   @db.VarChar(150)
+  catcount       Int?
+  cat_icon       String    @db.VarChar(100)
+  cat_infoimg    String    @db.VarChar(200)
+  bestsellreport String?   @db.VarChar(200)
+
+  @@index([CatImg], map: "CatImg")
+  @@index([CustomName], map: "CustomName")
+  @@index([IsActive], map: "IsActive")
+  @@index([bestsellreport], map: "bestsellreport")
+  @@index([catId], map: "catId")
+  @@index([catId, parent_id, catName, CustomName, catcount], map: "catId_2")
+  @@index([catName], map: "catName")
+  @@index([cat_icon], map: "cat_icon")
+  @@index([cat_infoimg], map: "cat_infoimg")
+  @@index([catcount], map: "catcount")
+  @@index([parent_id], map: "parent_id")
+}
+
+model cmi_ccCollaterals {
+  cid          Int      @id @default(autoincrement())
+  cdates       DateTime @db.Date
+  NCEditors    String?  @db.Text
+  NCPublishing String?  @db.Text
+  CCEditors    String?  @db.Text
+  CCPublishing String?  @db.Text
+  NAEditors    String?  @db.Text
+  NAPublishing String?  @db.Text
+  UCEditors    String?  @db.Text
+  UCPublishing String?  @db.Text
+  team         Int
+  EditerStatus Int      @default(0)
+  PubStatus    Int      @default(0)
+}
+
+model cmi_cccolsalesusers {
+  sid   Int    @id @default(autoincrement())
+  uname String @db.VarChar(100)
+  upass String @db.VarChar(100)
+  team  Int
+}
+
+model cmi_ccsalesstats {
+  ccsaleid         Int      @id @default(autoincrement())
+  dateadded        DateTime @db.Date
+  QueriesSales     BigInt   @default(0)
+  QueriesAddressed BigInt   @default(0)
+  team             Int
+}
+
+model cmi_cmi_newsletters {
+  id      Int      @id @default(autoincrement())
+  email   String   @db.VarChar(100)
+  status  Int
+  datesub DateTime @db.DateTime(0)
+
+  @@index([datesub], map: "datesub")
+  @@index([email], map: "email")
+  @@index([status], map: "status")
+}
+
+model cmi_cmifaq {
+  fid Int     @id @default(autoincrement())
+  rid Int
+  q1  String? @db.VarChar(800)
+  q2  String? @db.VarChar(800)
+  q3  String? @db.VarChar(800)
+  q4  String? @db.VarChar(800)
+  q5  String? @db.VarChar(800)
+  q6  String? @db.VarChar(800)
+  a1  String? @db.VarChar(800)
+  a2  String? @db.VarChar(800)
+  a3  String? @db.VarChar(800)
+  a4  String? @db.VarChar(800)
+  a5  String? @db.VarChar(800)
+  a6  String? @db.VarChar(800)
+
+  @@index([a1], map: "a1")
+  @@index([a2], map: "a2")
+  @@index([a3], map: "a3")
+  @@index([a4], map: "a4")
+  @@index([a5], map: "a5")
+  @@index([a6], map: "a6")
+  @@index([q1], map: "q1")
+  @@index([q2], map: "q2")
+  @@index([q3], map: "q3")
+  @@index([q4], map: "q4")
+  @@index([q5], map: "q5")
+  @@index([q6], map: "q6")
+  @@index([rid], map: "rid")
+}
+
+model cmi_consultinghelp {
+  hid      Int      @id @default(autoincrement())
+  ucomment String   @db.Text
+  uemail   String   @db.VarChar(150)
+  udate    DateTime @db.DateTime(0)
+}
+
+model cmi_countries {
+  id       Int    @id @default(autoincrement())
+  regcode  String @db.VarChar(10)
+  name     String @default("") @db.VarChar(50)
+  ccode    String @default("") @db.VarChar(3)
+  blocked  Int?   @default(0)
+  IsActive Int    @default(1)
+
+  @@index([IsActive], map: "IsActive")
+  @@index([blocked], map: "assignLead")
+  @@index([id, name, ccode], map: "id")
+  @@index([name], map: "name")
+  @@index([regcode], map: "regcode")
+}
+
+model cmi_countries_latest {
+  id       Int    @id @default(autoincrement())
+  regcode  String @db.VarChar(10)
+  name     String @default("") @db.VarChar(50)
+  ccode    String @default("") @db.VarChar(3)
+  IsActive Int    @default(1)
+
+  @@index([id, name, ccode], map: "id")
+  @@index([name], map: "name")
+  @@index([regcode], map: "regcode")
+}
+
+model cmi_covidtracker {
+  imptid     Int      @id @default(autoincrement())
+  pub_date   DateTime @db.Date
+  image      String   @db.VarChar(200)
+  title      String   @db.VarChar(500)
+  cvddesc1   String   @db.Text
+  cvddesc2   String   @db.Text
+  expectrcry String   @db.Text
+  exprtcornr String   @db.Text
+  CustomName String?  @db.VarChar(300)
+  metakey    String?  @db.Text
+  metadesc   String   @db.Text
+
+  @@index([CustomName], map: "CustomName")
+  @@index([image], map: "image")
+  @@index([pub_date], map: "pub_date")
+  @@index([title], map: "title")
+}
+
+model cmi_formdetails {
+  id             Int       @id @default(autoincrement())
+  report_id      Int?
+  email          String    @db.VarChar(155)
+  firstname      String    @db.VarChar(155)
+  lastname       String?   @db.VarChar(155)
+  password       String?   @db.VarChar(155)
+  price          Int?
+  company        String    @db.VarChar(155)
+  industry       String?   @db.VarChar(100)
+  phone          String    @db.VarChar(155)
+  address        String?   @db.VarChar(155)
+  city           String?   @db.VarChar(155)
+  state          String?   @db.VarChar(155)
+  zipcode        String?   @db.VarChar(55)
+  country        String    @db.VarChar(155)
+  continent      String?   @db.VarChar(10)
+  comments       String?   @db.Text
+  licence        String?   @db.VarChar(255)
+  formname       String    @db.VarChar(50)
+  designation    String    @db.VarChar(50)
+  subject        String?   @db.VarChar(100)
+  createddate    DateTime? @db.Date
+  modified_date  DateTime  @default(now()) @db.DateTime(0)
+  assigned       Int?
+  payment_status String?   @db.VarChar(20)
+  IPAddr         String?   @db.VarChar(80)
+
+  @@index([IPAddr], map: "IPAddr")
+  @@index([address], map: "address")
+  @@index([assigned], map: "assigned")
+  @@index([company], map: "company")
+  @@index([continent], map: "continent")
+  @@index([createddate], map: "createddate")
+  @@index([designation], map: "designation")
+  @@index([email], map: "email")
+  @@index([firstname], map: "firstname")
+  @@index([formname], map: "formname")
+  @@index([id], map: "id")
+  @@index([licence], map: "licence")
+  @@index([modified_date], map: "modified_date")
+  @@index([payment_status], map: "payment_status")
+  @@index([phone], map: "phone")
+  @@index([price], map: "price")
+  @@index([report_id], map: "report_id")
+  @@index([subject], map: "subject")
+}
+
+model cmi_insigtanalysis {
+  id      Int      @id @default(autoincrement())
+  email   String   @db.VarChar(100)
+  datesub DateTime @db.DateTime(0)
+
+  @@index([datesub], map: "datesub")
+  @@index([email], map: "email")
+}
+
+model cmi_mediacovragetypt {
+  id           BigInt   @id @default(autoincrement())
+  pub_date     DateTime @db.Date
+  ModifiedDate DateTime @default(now()) @db.DateTime(0)
+  view_desc    String   @db.LongText
+  title        String   @db.Text
+  IsActive     Int      @default(1)
+  newimg       String?  @db.VarChar(700)
+  CustomName   String   @db.VarChar(800)
+
+  @@index([CustomName], map: "CustomName")
+  @@index([IsActive], map: "IsActive")
+  @@index([newimg], map: "newimg")
+}
+
+model cmi_metareportids {
+  rid   Int    @id @default(autoincrement())
+  rno   Int
+  title String @db.VarChar(2000)
+
+  @@index([rno], map: "rno")
+  @@index([title(length: 1024)], map: "title")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model cmi_mr_continents {
+  cid        Int     @id @default(autoincrement())
+  code       String  @db.Char(10)
+  name       String? @db.VarChar(100)
+  salesemail String? @db.VarChar(200)
+  categories String? @db.VarChar(200)
+}
+
+model cmi_news {
+  id             BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  rid            Int      @default(0)
+  pub_date       DateTime @default(dbgenerated("('0000-00-00')")) @db.Date
+  view_desc      String   @db.LongText
+  title          String   @db.Text
+  IsActive       Int      @default(1)
+  CustomName     String   @default("") @db.VarChar(200)
+  ModifiedDate   DateTime @default(dbgenerated("('0000-00-00 00:00:00')")) @db.DateTime(0)
+  createddate    DateTime @default(dbgenerated("('0000-00-00 00:00:00')")) @db.DateTime(0)
+  prmetatitle    String?  @db.VarChar(400)
+  prmetadesc     String?  @db.Text
+  prmetakeywords String?  @db.Text
+  admin_id       Int
+
+  @@index([IsActive], map: "IsActive")
+  @@index([createddate], map: "createddate")
+  @@index([id], map: "id")
+  @@index([id, rid, CustomName], map: "id_2")
+  @@index([pub_date], map: "pub_date")
+  @@index([title(length: 100)], map: "title")
+}
+
+model cmi_newsauthors {
+  authid     Int                        @id @default(autoincrement())
+  authname   String                     @db.VarChar(300)
+  authurl    String                     @db.VarChar(200)
+  authbio    String                     @db.VarChar(900)
+  authimg    String?                    @db.VarChar(300)
+  authstatus cmi_newsauthors_authstatus @default(dbgenerated("0"))
+
+  @@index([authid], map: "authid")
+  @@index([authimg], map: "authimg")
+  @@index([authname], map: "authname")
+  @@index([authstatus], map: "authstatus")
+  @@index([authurl], map: "authurl")
+}
+
+model cmi_ourclient {
+  cid   Int      @id @default(autoincrement())
+  cimg  String   @db.VarChar(100)
+  cdate DateTime @default(now()) @db.DateTime(0)
+
+  @@index([cimg], map: "cimg")
+}
+
+model cmi_payment_trans {
+  id             Int      @id @default(autoincrement())
+  rid            Int
+  amount         Int
+  transactionid  String?  @db.VarChar(200)
+  taxid          Int?
+  payst          String?  @db.VarChar(200)
+  ltype          String   @db.VarChar(100)
+  name           String?  @db.VarChar(200)
+  formname       String?  @db.VarChar(40)
+  clientname     String   @db.VarChar(100)
+  email          String   @db.VarChar(150)
+  phone          String   @db.VarChar(20)
+  addr           String?  @db.VarChar(300)
+  Country        String?  @db.VarChar(200)
+  createddate    DateTime @db.DateTime(0)
+  salesemailnoti String?  @db.VarChar(600)
+
+  @@index([Country], map: "Country")
+  @@index([addr], map: "addr")
+  @@index([amount], map: "amount")
+  @@index([clientname], map: "clientname")
+  @@index([email], map: "email")
+  @@index([formname], map: "formname")
+  @@index([ltype], map: "ltype")
+  @@index([name], map: "name")
+  @@index([payst], map: "payst")
+  @@index([phone], map: "phone")
+  @@index([rid], map: "rid")
+  @@index([salesemailnoti], map: "salesemailnoti")
+  @@index([taxid], map: "taxid")
+  @@index([transactionid], map: "transactionid")
+}
+
+model cmi_phxs_emailer {
+  emid      Int      @id @default(autoincrement())
+  name      String   @db.VarChar(100)
+  company   String   @db.VarChar(100)
+  email     String   @db.VarChar(200)
+  phone     String   @db.VarChar(50)
+  country   String   @db.VarChar(150)
+  jtitle    String   @db.VarChar(150)
+  msg       String   @db.Text
+  cdate     DateTime @db.DateTime(0)
+  subscribe Int      @default(1)
+
+  @@index([company], map: "company")
+  @@index([country], map: "country")
+  @@index([email], map: "email")
+  @@index([emid], map: "emid")
+  @@index([jtitle], map: "jtitle")
+  @@index([name], map: "name")
+  @@index([phone], map: "phone")
+  @@index([subscribe], map: "subscribe")
+}
+
+model cmi_promocodeshjk {
+  pid        Int      @id @default(autoincrement())
+  title      String   @db.VarChar(200)
+  pcode      String   @db.VarChar(300)
+  discount   Int
+  expirydate DateTime @db.Date
+  createdate DateTime @default(now()) @db.DateTime(0)
+  status     Int
+
+  @@index([createdate], map: "createdate")
+  @@index([discount], map: "discount")
+  @@index([expirydate], map: "expirydate")
+  @@index([pcode], map: "pcode")
+  @@index([status], map: "status")
+  @@index([title], map: "title")
+}
+
+model cmi_publishers {
+  PubID           Int     @id @default(autoincrement())
+  title           String  @db.VarChar(255)
+  PubFirstName    String  @db.VarChar(155)
+  CustomName      String  @db.VarChar(255)
+  description     String? @db.Text
+  Logo            String? @db.VarChar(255)
+  totalreports    Int
+  contactname     String  @db.VarChar(255)
+  contactphone    String  @db.VarChar(20)
+  contactemail    String  @db.VarChar(255)
+  RnRrevenueper   Int
+  metatitle       String  @db.VarChar(255)
+  metadescription String  @db.Text
+  metakeywords    String  @db.Text
+  featured        Int     @db.SmallInt
+  IsActive        Int     @default(1)
+
+  @@index([CustomName], map: "CustomName")
+  @@index([PubFirstName], map: "PubFirstName")
+  @@index([PubID], map: "PubID")
+  @@index([totalreports], map: "totalreports")
+}
+
+model cmi_reports {
+  newsId               Int       @id @default(autoincrement()) @db.UnsignedInt
+  reportstatus         Int?      @default(0)
+  CatId                Int
+  newsSubject          String    @db.Text
+  keyword              String?   @db.VarChar(200)
+  newsLDesc            String?   @db.Text
+  summary              String?   @db.Text
+  segmentation         String?   @db.Text
+  newsDate             DateTime  @db.Date
+  Price_SUL            Int?
+  Price_CUL            Int?
+  Price_Multi          Int?
+  No_Pages             String    @db.VarChar(60)
+  CreatedDate          DateTime  @db.DateTime(0)
+  ModifiedDate         DateTime? @db.DateTime(0)
+  IsActive             Int       @default(1)
+  discount             String?   @db.VarChar(10)
+  meta_title           String?   @db.VarChar(400)
+  meta_description     String?   @db.VarChar(500)
+  meta_keywords        String?   @db.VarChar(900)
+  CustomName           String?   @db.VarChar(300)
+  admin_id             Int
+  keywords             String?   @db.VarChar(900)
+  studyperiod          String    @db.VarChar(50)
+  yearofestimation     String    @db.VarChar(10)
+  cagr                 String    @db.VarChar(20)
+  fastgrmarket         String    @db.VarChar(50)
+  larmarket            String    @db.VarChar(50)
+  marketconcentration  String    @db.VarChar(100)
+  allcompany           String    @db.Text
+  marketoverview       String    @db.Text
+  competetivelandscape String    @db.Text
+  keymarkettrend       String    @db.Text
+  recentdevelopment    String    @db.Text
+  scopeofreports       String    @db.Text
+  cagrcurrentyear      String    @db.VarChar(50)
+  cagrforecastyear     String    @db.VarChar(50)
+  majorplayerlist      String    @db.Text
+  marketconimg         String?   @db.VarChar(200)
+  valueevn             String    @db.VarChar(100)
+  competitive_value    Int?
+
+  @@index([CatId], map: "CatId")
+  @@index([CreatedDate], map: "CreatedDate")
+  @@index([CustomName], map: "CustomName")
+  @@index([IsActive], map: "IsActive")
+  @@index([No_Pages], map: "No_Pages")
+  @@index([Price_CUL], map: "Price_CUL")
+  @@index([Price_Multi], map: "Price_Multi")
+  @@index([Price_SUL], map: "Price_SUL")
+  @@index([keyword], map: "keyword")
+  @@index([keywords(length: 333)], map: "keywords")
+  @@index([meta_description(length: 333)], map: "meta_description")
+  @@index([meta_keywords(length: 333)], map: "meta_keywords")
+  @@index([meta_title(length: 333)], map: "meta_title")
+  @@index([newsDate], map: "newsDate")
+  @@index([newsId], map: "newsId")
+  @@index([newsSubject(length: 333)], map: "newsSubject")
+  @@index([newsSubject(length: 333)], map: "newsSubject_2")
+  @@index([reportstatus], map: "reportstatus")
+}
+
+model cmi_reports_ar {
+  transid              Int    @id @default(autoincrement())
+  reportid             Int
+  meta_title           String @db.VarChar(400)
+  meta_description     String @db.VarChar(500)
+  meta_keywords        String @db.VarChar(900)
+  marketoverview       String @db.Text
+  competetivelandscape String @db.Text
+  keymarkettrend       String @db.Text
+  recentdevelopment    String @db.Text
+  scopeofreports       String @db.Text
+  allcompany           String @db.Text
+  majorplayerlist      String @db.Text
+  keywords             String @db.VarChar(200)
+  newsLDesc            String @db.Text
+}
+
+model cmi_reports_de {
+  transid              Int    @id @default(autoincrement())
+  reportid             Int
+  meta_title           String @db.VarChar(400)
+  meta_description     String @db.VarChar(500)
+  meta_keywords        String @db.VarChar(900)
+  marketoverview       String @db.Text
+  competetivelandscape String @db.Text
+  keymarkettrend       String @db.Text
+  recentdevelopment    String @db.Text
+  scopeofreports       String @db.Text
+  allcompany           String @db.Text
+  majorplayerlist      String @db.Text
+  keywords             String @db.VarChar(200)
+  newsLDesc            String @db.Text
+}
+
+model cmi_reports_fr {
+  transid              Int    @id @default(autoincrement())
+  reportid             Int
+  meta_title           String @db.VarChar(400)
+  meta_description     String @db.VarChar(500)
+  meta_keywords        String @db.VarChar(900)
+  marketoverview       String @db.Text
+  competetivelandscape String @db.Text
+  keymarkettrend       String @db.Text
+  recentdevelopment    String @db.Text
+  scopeofreports       String @db.Text
+  allcompany           String @db.Text
+  majorplayerlist      String @db.Text
+  keywords             String @db.VarChar(200)
+  newsLDesc            String @db.Text
+}
+
+model cmi_reports_it {
+  transid              Int    @id @default(autoincrement())
+  reportid             Int
+  meta_title           String @db.VarChar(400)
+  meta_description     String @db.VarChar(500)
+  meta_keywords        String @db.VarChar(900)
+  marketoverview       String @db.Text
+  competetivelandscape String @db.Text
+  keymarkettrend       String @db.Text
+  recentdevelopment    String @db.Text
+  scopeofreports       String @db.Text
+  allcompany           String @db.Text
+  majorplayerlist      String @db.Text
+  keywords             String @db.VarChar(200)
+  newsLDesc            String @db.Text
+}
+
+model cmi_reports_ja {
+  transid              Int    @id @default(autoincrement())
+  reportid             Int
+  meta_title           String @db.VarChar(400)
+  meta_description     String @db.VarChar(500)
+  meta_keywords        String @db.VarChar(900)
+  marketoverview       String @db.Text
+  competetivelandscape String @db.Text
+  keymarkettrend       String @db.Text
+  recentdevelopment    String @db.Text
+  scopeofreports       String @db.Text
+  allcompany           String @db.Text
+  majorplayerlist      String @db.Text
+  keywords             String @db.VarChar(200)
+  newsLDesc            String @db.Text
+}
+
+model cmi_reports_ko {
+  transid              Int    @id @default(autoincrement())
+  reportid             Int
+  meta_title           String @db.VarChar(400)
+  meta_description     String @db.VarChar(500)
+  meta_keywords        String @db.VarChar(900)
+  marketoverview       String @db.Text
+  competetivelandscape String @db.Text
+  keymarkettrend       String @db.Text
+  recentdevelopment    String @db.Text
+  scopeofreports       String @db.Text
+  allcompany           String @db.Text
+  majorplayerlist      String @db.Text
+  keywords             String @db.VarChar(200)
+  newsLDesc            String @db.Text
+}
+
+model cmi_reports_old {
+  newsId           Int       @id @default(autoincrement()) @db.UnsignedInt
+  reportstatus     Int?      @default(0)
+  CatId            Int
+  newsSubject      String    @db.Text
+  keyword          String?   @db.VarChar(200)
+  newsLDesc        String    @db.Text
+  summary          String?   @db.Text
+  segmentation     String?   @db.Text
+  newsDate         DateTime  @db.Date
+  Price_SUL        Float
+  Price_CUL        String?   @db.VarChar(18)
+  Price_Multi      String?   @db.VarChar(20)
+  No_Pages         String    @db.VarChar(60)
+  CreatedDate      DateTime  @db.DateTime(0)
+  ModifiedDate     DateTime? @db.DateTime(0)
+  IsActive         Int       @default(1)
+  discount         String?   @db.VarChar(10)
+  meta_title       String?   @db.VarChar(400)
+  meta_description String?   @db.VarChar(500)
+  meta_keywords    String?   @db.VarChar(900)
+  CustomName       String?   @db.VarChar(300)
+  admin_id         Int
+  keywords         String?   @db.VarChar(900)
+
+  @@index([CatId], map: "CatId")
+  @@index([CreatedDate], map: "CreatedDate")
+  @@index([CustomName], map: "CustomName")
+  @@index([IsActive], map: "IsActive")
+  @@index([No_Pages], map: "No_Pages")
+  @@index([Price_CUL], map: "Price_CUL")
+  @@index([Price_Multi], map: "Price_Multi")
+  @@index([Price_SUL], map: "Price_SUL")
+  @@index([keyword], map: "keyword")
+  @@index([keywords(length: 333)], map: "keywords")
+  @@index([meta_description(length: 333)], map: "meta_description")
+  @@index([meta_keywords(length: 333)], map: "meta_keywords")
+  @@index([meta_title(length: 333)], map: "meta_title")
+  @@index([newsDate], map: "newsDate")
+  @@index([newsId], map: "newsId")
+  @@index([newsSubject(length: 333)], map: "newsSubject")
+  @@index([newsSubject(length: 333)], map: "newsSubject_2")
+  @@index([reportstatus], map: "reportstatus")
+}
+
+model cmi_reports_pt {
+  transid              Int    @id @default(autoincrement())
+  reportid             Int
+  meta_title           String @db.VarChar(400)
+  meta_description     String @db.VarChar(500)
+  meta_keywords        String @db.VarChar(900)
+  marketoverview       String @db.Text
+  competetivelandscape String @db.Text
+  keymarkettrend       String @db.Text
+  recentdevelopment    String @db.Text
+  scopeofreports       String @db.Text
+  allcompany           String @db.Text
+  majorplayerlist      String @db.Text
+  keywords             String @db.VarChar(200)
+  newsLDesc            String @db.Text
+}
+
+model cmi_reports_ru {
+  transid              Int    @id @default(autoincrement())
+  reportid             Int
+  meta_title           String @db.VarChar(400)
+  meta_description     String @db.VarChar(500)
+  meta_keywords        String @db.VarChar(900)
+  marketoverview       String @db.Text
+  competetivelandscape String @db.Text
+  keymarkettrend       String @db.Text
+  recentdevelopment    String @db.Text
+  scopeofreports       String @db.Text
+  allcompany           String @db.Text
+  majorplayerlist      String @db.Text
+  keywords             String @db.VarChar(200)
+  newsLDesc            String @db.Text
+}
+
+model cmi_reports_zh {
+  transid              Int    @id @default(autoincrement())
+  reportid             Int
+  meta_title           String @db.VarChar(400)
+  meta_description     String @db.VarChar(500)
+  meta_keywords        String @db.VarChar(900)
+  marketoverview       String @db.Text
+  competetivelandscape String @db.Text
+  keymarkettrend       String @db.Text
+  recentdevelopment    String @db.Text
+  scopeofreports       String @db.Text
+  allcompany           String @db.Text
+  majorplayerlist      String @db.Text
+  keywords             String @db.VarChar(200)
+  newsLDesc            String @db.Text
+}
+
+model cmi_salesquriesdetails {
+  quriesid                  Int       @id @default(autoincrement())
+  team                      Int
+  DateofArivingQueryandTime DateTime? @db.DateTime(0)
+  SalesPerson               String?   @db.VarChar(100)
+  ReportTittle              String?   @db.VarChar(250)
+  QueryType                 String?   @db.VarChar(100)
+  HandledPending            String?   @db.VarChar(100)
+  Importance                String?   @db.VarChar(100)
+  Format                    String?   @db.VarChar(100)
+  WhoHandled                String?   @db.VarChar(100)
+  DateofHandlingantTime     DateTime? @db.DateTime(0)
+  StatusFromSales           String?   @db.VarChar(100)
+  qurycreateddetails        DateTime  @db.Date
+  comment                   String?   @db.VarChar(500)
+}
+
+model cmi_salesteam {
+  sid    Int    @id @default(autoincrement())
+  name   String @db.VarChar(100)
+  role   Int
+  scount Int?
+  region Int?
+}
+
+model cmi_stticpgs {
+  id         Int     @id @default(autoincrement())
+  title      String  @db.VarChar(500)
+  descp      String  @db.Text
+  CustomName String? @db.VarChar(300)
+  metatitle  String? @db.VarChar(300)
+  metadesc   String? @db.VarChar(300)
+  metakey    String? @db.VarChar(500)
+
+  @@index([CustomName], map: "CustomName")
+  @@index([metadesc], map: "metadesc")
+  @@index([metakey], map: "metakey")
+  @@index([metatitle], map: "metatitle")
+  @@index([title], map: "title")
+}
+
+model cmi_testimonials {
+  id           Int       @id @default(autoincrement())
+  pub_date     DateTime  @db.Date
+  ModifiedDate DateTime? @db.DateTime(0)
+  view_desc    String    @db.LongText
+  dept         String    @db.VarChar(500)
+  company      String    @db.VarChar(500)
+  newimg       String?   @db.VarChar(500)
+
+  @@index([company], map: "company")
+  @@index([dept], map: "dept")
+  @@index([newimg], map: "newimg")
+}
+
+model cmi_toc {
+  id     Int     @id @default(autoincrement())
+  newsId Int
+  TOC    String? @db.MediumText
+
+  @@index([id, newsId], map: "id")
+  @@index([newsId], map: "newsId")
+}
+
+model cmi_track_useip {
+  uid    Int      @id @default(autoincrement())
+  ipaddr String   @db.VarChar(20)
+  date   DateTime @db.DateTime(0)
+}
+
+model cmi_users {
+  UserId       Int      @id @default(autoincrement()) @db.UnsignedInt
+  LoginID      Int?
+  Email_ID     String   @db.VarChar(100)
+  cmipassrd    String   @db.VarChar(100)
+  fullname     String   @db.VarChar(50)
+  company      String?  @db.VarChar(50)
+  phonecontact String?  @db.VarChar(20)
+  industry     Int?
+  CreatedDate  DateTime @db.DateTime(0)
+  IsActive     Int      @default(1)
+
+  @@index([UserId, LoginID, Email_ID], map: "UserId")
+}
+
+model cmi_vaccinetracker {
+  vvid                  Int      @id @default(autoincrement())
+  NCT_NUMBER            String?  @db.VarChar(200)
+  ACRONYM               String?  @db.VarChar(200)
+  CONDITIONC            String?  @db.VarChar(400)
+  PRODUCT_NAME          String?  @db.VarChar(400)
+  INTERVENTION          String?  @db.VarChar(400)
+  VACCINE_TYPE          String?  @db.VarChar(500)
+  MOA_TECHNOLOGY        String?  @db.VarChar(200)
+  SPONSOR_COLLABORATORS String?  @db.VarChar(500)
+  PHASES_OF_TRIAL       String?  @db.VarChar(200)
+  COMPLETION_DATE       String?  @db.VarChar(30)
+  COUNTRY               String?  @db.VarChar(200)
+  LAUNCH_YEAR           String?  @db.VarChar(50)
+  TRIAL_NUMBER          String   @db.VarChar(400)
+  TRIAL_NAME            String   @db.VarChar(400)
+  CREATEDDATE           DateTime @db.Date
+
+  @@index([ACRONYM], map: "ACRONYM")
+  @@index([COMPLETION_DATE], map: "COMPLETION_DATE")
+  @@index([CONDITIONC], map: "CONDITIONC")
+  @@index([COUNTRY], map: "COUNTRY")
+  @@index([INTERVENTION], map: "INTERVENTION")
+  @@index([LAUNCH_YEAR], map: "LAUNCH_YEAR")
+  @@index([MOA_TECHNOLOGY], map: "MOA_TECHNOLOGY")
+  @@index([NCT_NUMBER], map: "NCT_NUMBER")
+  @@index([PHASES_OF_TRIAL], map: "PHASES_OF_TRIAL")
+  @@index([PRODUCT_NAME], map: "PRODUCT_NAME")
+  @@index([SPONSOR_COLLABORATORS(length: 250)], map: "SPONSOR_COLLABORATORS")
+  @@index([TRIAL_NAME], map: "TRIAL_NAME")
+  @@index([TRIAL_NUMBER], map: "TRIAL_NUMBER")
+  @@index([VACCINE_TYPE], map: "VACCINE_TYPE")
+  @@index([vvid], map: "vvid")
+}
+
+model cmi_vacineusers {
+  sid          Int      @id @default(autoincrement())
+  uname        String   @db.VarChar(100)
+  upass        String   @db.VarChar(100)
+  team         Int
+  dateuploaded DateTime @db.DateTime(0)
+}
+
+model cmi_xs_phaseinfo {
+  xsid    Int      @id @default(autoincrement())
+  name    String   @db.VarChar(100)
+  company String   @db.VarChar(100)
+  email   String   @db.VarChar(200)
+  phone   String   @db.VarChar(50)
+  country String   @db.VarChar(150)
+  jtitle  String   @db.VarChar(150)
+  msg     String   @db.Text
+  cdate   DateTime @db.DateTime(0)
+
+  @@index([cdate], map: "cdate")
+  @@index([company], map: "company")
+  @@index([country], map: "country")
+  @@index([email], map: "email")
+  @@index([jtitle], map: "jtitle")
+  @@index([name], map: "name")
+  @@index([phone], map: "phone")
+}
+
+model cmimi_discounts_lists {
+  dno              Int      @id @default(autoincrement())
+  userid           Int?
+  rno              String?  @default("0") @db.VarChar(11)
+  rname            String?  @db.VarChar(800)
+  cname            String   @db.VarChar(200)
+  lic_type         String   @db.VarChar(50)
+  original_price   Float
+  discounted_price Float    @default(0)
+  payment_type     Int?
+  currency         String   @db.VarChar(10)
+  create_date      DateTime @db.DateTime(0)
+  expiry_date      DateTime @db.Date
+  link_status      Int
+  modified_by      String?  @db.VarChar(80)
+  clientemail      String?  @db.VarChar(200)
+  salesemailnoti   String?  @db.VarChar(600)
+
+  @@index([clientemail], map: "clientemail")
+  @@index([cname], map: "cname")
+  @@index([currency], map: "currency")
+  @@index([original_price], map: "original_price")
+  @@index([payment_type], map: "payment_type")
+  @@index([rname], map: "rname")
+  @@index([rno], map: "rno")
+  @@index([salesemailnoti], map: "salesemailnoti")
+  @@index([userid], map: "userid")
+}
+
+model cminews_blogs {
+  id             BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  authid         Int      @default(0)
+  pub_date       DateTime @default(dbgenerated("('0000-00-00')")) @db.Date
+  view_desc      String   @db.LongText
+  title          String   @db.Text
+  IsActive       Int      @default(1)
+  CatId          Int
+  newimg         String?  @db.VarChar(700)
+  blogthumb      String   @db.VarChar(400)
+  CustomName     String   @default("") @db.VarChar(200)
+  ModifiedDate   DateTime @default(dbgenerated("('0000-00-00 00:00:00')")) @db.DateTime(0)
+  createddate    DateTime @default(dbgenerated("('0000-00-00 00:00:00')")) @db.DateTime(0)
+  prmetatitle    String?  @db.VarChar(400)
+  prmetadesc     String?  @db.Text
+  prmetakeywords String?  @db.Text
+  admin_id       Int      @default(0)
+  postview       Int      @default(0)
+
+  @@index([IsActive], map: "IsActive")
+  @@index([createddate], map: "createddate")
+  @@index([id], map: "id")
+  @@index([id, authid, CustomName], map: "id_2")
+  @@index([blogthumb(length: 333)], map: "newsthumb")
+  @@index([pub_date], map: "pub_date")
+}
+
+model cminews_news {
+  id             BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  authid         Int      @default(0)
+  pub_date       DateTime @db.Date
+  view_desc      String   @db.LongText
+  title          String   @db.Text
+  IsActive       Int      @default(1)
+  newimg         String?  @db.VarChar(700)
+  newsthumb      String   @db.VarChar(400)
+  CustomName     String   @default("") @db.VarChar(200)
+  ModifiedDate   DateTime @default(dbgenerated("('0000-00-00 00:00:00')")) @db.DateTime(0)
+  createddate    DateTime @default(dbgenerated("('0000-00-00 00:00:00')")) @db.DateTime(0)
+  prmetatitle    String?  @db.VarChar(400)
+  prmetadesc     String?  @db.Text
+  prmetakeywords String?  @db.Text
+  admin_id       Int      @default(0)
+  futurepost     String?  @default("0") @db.VarChar(11)
+
+  @@index([IsActive], map: "IsActive")
+  @@index([createddate], map: "createddate")
+  @@index([id], map: "id")
+  @@index([id, authid, CustomName], map: "id_2")
+  @@index([newsthumb(length: 333)], map: "newsthumb")
+  @@index([pub_date], map: "pub_date")
+}
+
+model cmisub_category {
+  catId           Int    @id @default(autoincrement())
+  catName         String @db.VarChar(200)
+  catimg          String @db.VarChar(50)
+  mostsaledreport Int
+  imglink1        String @db.VarChar(200)
+  imglink2        String @db.VarChar(200)
+  IsActive        Int
+
+  @@index([catName], map: "catName")
+  @@index([catimg], map: "catimg")
+  @@index([imglink1], map: "imglink1")
+  @@index([imglink2], map: "imglink2")
+  @@index([mostsaledreport], map: "mostsaledreport")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model cmisub_img {
+  id      Int
+  imgname String   @db.VarChar(200)
+  updates DateTime @db.Date
+
+  @@ignore
+}
+
+model cmisub_imgs {
+  id      Int      @id
+  imgname String   @db.VarChar(50)
+  updated DateTime @db.Date
+
+  @@index([imgname], map: "imgname")
+  @@index([updated], map: "updated")
+}
+
+model cmisubmod_new {
+  id        Int    @id @default(autoincrement())
+  username  String @db.VarChar(50)
+  password  String @db.VarChar(50)
+  role      String @db.VarChar(20)
+  FirstName String @db.VarChar(50)
+  LastName  String @db.VarChar(50)
+  email     String @db.VarChar(150)
+  status    Int
+}
+
+model getips {
+  getid     Int    @id @default(autoincrement())
+  userip    String @db.VarChar(50)
+  usragent  String @db.VarChar(200)
+  Referrers String @db.VarChar(200)
+  pagelink  String @db.VarChar(400)
+
+  @@index([Referrers], map: "Referrers")
+  @@index([pagelink], map: "pagelink")
+  @@index([userip], map: "userip")
+  @@index([usragent], map: "usragent")
+}
+
+enum cmi_newsauthors_authstatus {
+  // 1 @map("1")
+  // 0 @map("0")
+  EMPTY_ENUM_VALUE @map("")
+}
