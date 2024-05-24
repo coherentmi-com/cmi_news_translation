@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -14,6 +15,7 @@
   },
   "dependencies": {
     "@prisma/client": "^5.14.0",
-    "axios": "^1.7.1"
+    "axios": "^1.7.1",
+    "p-limit": "^5.0.0"
   }
 }
