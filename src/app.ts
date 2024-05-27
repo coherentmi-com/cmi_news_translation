@@ -4,7 +4,7 @@ import pLimit from 'p-limit';
 
 const prismaClient = new PrismaClient();
 
-let locales = ['fr', 'it', 'ru', 'ja', 'ar', 'ko', 'pt'];
+let locales = ['it', 'ru', 'ko', 'pt'];
 
 //Fetch the report From the database
 async function getReport(id: number) {
@@ -319,33 +319,28 @@ async function translateReport(reportId: number, lang: string) {
 
 async function translate() {
   //Create the Request Limit
-  const limit = pLimit(10);
+  const limit = pLimit(30);
 
   const reportIds = await prismaClient.cmi_reports.findMany({
-    where: {
-      newsId: {
-        gt: 10,
-      },
-    },
     select: {
       newsId: true,
     },
   });
 
-  const promises = reportIds.map((id) =>
-    limit(() => translateReport(id.newsId, 'zh'))
-  );
+  // //First Loop for the Locales Array
+  for (const locale of locales) {
+    console.log('###################### First Loop #######################');
 
-  await Promise.all(promises);
-  console.log('All Reports are Translated !');
+    //Creating the Concurrent Request Promises for the Single Locale
+    const promises = reportIds.map((id: any) =>
+      limit(() => translateReport(id.newsId, locale))
+    );
 
-  // for (const locale of locales) {
-  //   console.log('###################### First Loop #######################');
-  //   for (const id of reportIds) {
-  //     console.log('####################### Second Loop ######################');
-  //     await translateReport(id.newsId, locale);
-  //   }
-  // }
+    //awaiting on the all promises created at a time for
+    await Promise.all(promises);
+  }
+
+  // console.log('All Reports are Translated in all Languages!');
 }
 
 translate();

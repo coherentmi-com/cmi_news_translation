@@ -11,7 +11,7 @@ import { PrismaClient } from '@prisma/client';
 import axios from 'axios';
 import pLimit from 'p-limit';
 const prismaClient = new PrismaClient();
-let locales = ['fr', 'de', 'it', 'ru', 'ja', 'ar', 'zh', 'ko', 'pt'];
+let locales = ['it', 'ru', 'ja', 'ko', 'pt'];
 //Fetch the report From the database
 function getReport(id) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -302,23 +302,34 @@ function translateReport(reportId, lang) {
 function translate() {
     return __awaiter(this, void 0, void 0, function* () {
         //Create the Request Limit
-        const limit = pLimit(10);
-        const reportIds = yield prismaClient.cmi_reports.findMany({
-            where: {
-                newsId: {
-                    gt: 10,
-                },
-            },
-            select: {
-                newsId: true,
-            },
-        });
-        const promises = reportIds.map((id) => limit(() => translateReport(id.newsId, 'zh')));
-        yield Promise.all(promises);
-        console.log('All Reports are Translated !');
-        // for (const id of reportIds) {
-        //   await translateReport(id.newsId, 'de');
+        const limit = pLimit(2);
+        // const reportIds = await prismaClient.cmi_reports.findMany({
+        //   where: {
+        //     newsId: {
+        //       gt: 10,
+        //       lte: 20,
+        //     },
+        //   },
+        //   select: {
+        //     newsId: true,
+        //   },
+        // });
+        let today = new Date();
+        setInterval(() => {
+            console.log(today.getHours() + ':' + today.getMinutes() + ':' + today.getSeconds());
+            today = new Date();
+        }, 1000);
+        // //First Loop for the Locales Array
+        // for (const locale of locales) {
+        //   console.log('###################### First Loop #######################');
+        //   //Creating the Concurrent Request Promises for the Single Locale
+        //   const promises = reportIds.map((id: any) =>
+        //     limit(() => translateReport(id.newsId, locale))
+        //   );
+        //   //awaiting on the all promises created at a time for
+        //   await Promise.all(promises);
         // }
+        // console.log('All Reports are Translated in all Languages!');
     });
 }
 translate();
