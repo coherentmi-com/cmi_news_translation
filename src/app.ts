@@ -7,13 +7,30 @@ import winston, { level } from 'winston';
 const logger = winston.createLogger({
   level: 'info',
   format: winston.format.combine(
-    winston.format.timestamp(),
-    winston.format.json()
+    winston.format.timestamp({
+      format: 'YYYY-MM-DD HH:mm:ss',
+    }),
+    winston.format.printf((info) => {
+      let logMsg = `${info.timestamp} [${info.level.toUpperCase()}]: ${
+        info.message
+      }`;
+      if (info.durationMs) {
+        logMsg += ` (Duration: ${info.durationMs} ms)`;
+      }
+      return logMsg;
+    })
   ),
-  defaultMeta: { service: 'user-service' },
   transports: [
-    new winston.transports.File({ filename: 'running.log', level: 'info' }),
-    new winston.transports.File({ filename: 'error.log', level: 'error' }),
+    new winston.transports.File({
+      filename: 'running.log',
+      level: 'info',
+      options: { flags: 'w' },
+    }),
+    new winston.transports.File({
+      filename: 'error.log',
+      level: 'error',
+      options: { flags: 'w' },
+    }),
   ],
 });
 
@@ -309,37 +326,28 @@ async function translateReport(reportId: number, lang: string) {
       try {
         switch (lang) {
           case 'fr':
-            if (
-              await prismaClient.cmi_RegionalChinese.findUnique({
-                where: { trid: reportId },
-              })
-            ) {
-              await prismaClient.cmi_RegionalFrench.create({
-                data: {
-                  rid: reportId,
-                  meta_title: translatedReport[0],
-                  meta_description: translatedReport[1],
-                  meta_keywords: translatedReport[2],
-                  newsSubject: translatedReport[3],
-                  keyword: translatedReport[4],
-                  Summary: translatedReport[5],
-                  TransDate: today,
-                },
-              });
-              logger.log({
-                level: 'info',
-                message:
-                  'Translated Report ' +
-                  reportId +
-                  ' Saved Successfully to ' +
-                  lang +
-                  ' table!',
-              });
-              break;
-            } else {
-              console.log(reportId, ' Report is already translated!');
-              break;
-            }
+            await prismaClient.cmi_RegionalFrench.create({
+              data: {
+                rid: reportId,
+                meta_title: translatedReport[0],
+                meta_description: translatedReport[1],
+                meta_keywords: translatedReport[2],
+                newsSubject: translatedReport[3],
+                keyword: translatedReport[4],
+                Summary: translatedReport[5],
+                TransDate: today,
+              },
+            });
+            logger.log({
+              level: 'info',
+              message:
+                'Translated Report ' +
+                reportId +
+                ' Saved Successfully to ' +
+                lang +
+                ' table!',
+            });
+            break;
 
           case 'de':
             await prismaClient.cmi_RegionalGerman.create({
@@ -516,7 +524,7 @@ async function translateReport(reportId: number, lang: string) {
         return true;
       } catch (err) {
         logger.log({
-          level: 'err',
+          level: 'error',
           message:
             'Got error while saving the translated report to database!' + err,
         });
@@ -573,43 +581,43 @@ async function isReportTraslated(reportId: number, locale: string) {
     let report;
     switch (locale) {
       case 'fr':
-        report = await prismaClient.cmi_RegionalFrench.findUnique({
-          where: { trid: reportId },
+        report = await prismaClient.cmi_RegionalFrench.findFirst({
+          where: { rid: reportId },
         });
         break;
       case 'it':
-        report = await prismaClient.cmi_RegionalItalian.findUnique({
-          where: { trid: reportId },
+        report = await prismaClient.cmi_RegionalItalian.findFirst({
+          where: { rid: reportId },
         });
         break;
       case 'de':
-        report = await prismaClient.cmi_RegionalGerman.findUnique({
-          where: { trid: reportId },
+        report = await prismaClient.cmi_RegionalGerman.findFirst({
+          where: { rid: reportId },
         });
         break;
       case 'zh':
-        report = await prismaClient.cmi_RegionalChinese.findUnique({
-          where: { trid: reportId },
+        report = await prismaClient.cmi_RegionalChinese.findFirst({
+          where: { rid: reportId },
         });
         break;
       case 'ru':
-        report = await prismaClient.cmi_RegionalRussian.findUnique({
-          where: { trid: reportId },
+        report = await prismaClient.cmi_RegionalRussian.findFirst({
+          where: { rid: reportId },
         });
         break;
       case 'ko':
-        report = await prismaClient.cmi_RegionalKorean.findUnique({
-          where: { trid: reportId },
+        report = await prismaClient.cmi_RegionalKorean.findFirst({
+          where: { rid: reportId },
         });
         break;
       case 'ja':
-        report = await prismaClient.cmi_RegionalJapanese.findUnique({
-          where: { trid: reportId },
+        report = await prismaClient.cmi_RegionalJapanese.findFirst({
+          where: { rid: reportId },
         });
         break;
       case 'pt':
-        report = await prismaClient.cmi_RegionalPortuguese.findUnique({
-          where: { trid: reportId },
+        report = await prismaClient.cmi_RegionalPortuguese.findFirst({
+          where: { rid: reportId },
         });
         break;
       default:
@@ -633,7 +641,7 @@ async function startTranslating() {
   const reportIds = await prismaClient.cmi_reports.findMany({
     where: {
       newsId: {
-        lte: 10,
+        lte: 15,
       },
     },
     select: {
@@ -656,8 +664,9 @@ async function startTranslating() {
       if (await isReportTraslated(id.newsId, locale)) {
         console.log('Report with ID ' + id.newsId + ' is already translated!');
         return;
+      } else {
+        return limit(() => translateReport(id.newsId, locale));
       }
-      limit(() => translateReport(id.newsId, locale));
     });
 
     //awaiting on the all promises created at a time for

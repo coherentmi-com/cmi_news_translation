@@ -10,6 +10,32 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import { PrismaClient } from '@prisma/client';
 import axios from 'axios';
 import pLimit from 'p-limit';
+import winston from 'winston';
+//Winston Logger to store the all logs to the seperate files.
+const logger = winston.createLogger({
+    level: 'info',
+    format: winston.format.combine(winston.format.timestamp({
+        format: 'YYYY-MM-DD HH:mm:ss',
+    }), winston.format.printf((info) => {
+        let logMsg = `${info.timestamp} [${info.level.toUpperCase()}]: ${info.message}`;
+        if (info.durationMs) {
+            logMsg += ` (Duration: ${info.durationMs} ms)`;
+        }
+        return logMsg;
+    })),
+    transports: [
+        new winston.transports.File({
+            filename: 'running.log',
+            level: 'info',
+            options: { flags: 'w' },
+        }),
+        new winston.transports.File({
+            filename: 'error.log',
+            level: 'error',
+            options: { flags: 'w' },
+        }),
+    ],
+});
 const prismaClient = new PrismaClient();
 let locales = ['ru'];
 //Fetch the report From the database
@@ -60,11 +86,14 @@ function Retry(reportId, translatedReport, lang) {
                             TransDate: today,
                         },
                     });
-                    console.log('Translated Report ' +
-                        reportId +
-                        ' Saved Successfully to ' +
-                        lang +
-                        ' table!');
+                    logger.log({
+                        level: 'info',
+                        message: 'Translated Report ' +
+                            reportId +
+                            ' Saved Successfully to ' +
+                            lang +
+                            ' table!',
+                    });
                     break;
                 case 'de':
                     yield prismaClient.cmi_RegionalGerman.create({
@@ -79,11 +108,14 @@ function Retry(reportId, translatedReport, lang) {
                             TransDate: today,
                         },
                     });
-                    console.log('Translated Report ' +
-                        reportId +
-                        ' Saved Successfully to ' +
-                        lang +
-                        ' table!');
+                    logger.log({
+                        level: 'info',
+                        message: 'Translated Report ' +
+                            reportId +
+                            ' Saved Successfully to ' +
+                            lang +
+                            ' table!',
+                    });
                     break;
                 case 'it':
                     yield prismaClient.cmi_RegionalItalian.create({
@@ -98,11 +130,14 @@ function Retry(reportId, translatedReport, lang) {
                             TransDate: today,
                         },
                     });
-                    console.log('Translated Report ' +
-                        reportId +
-                        ' Saved Successfully to ' +
-                        lang +
-                        ' table!');
+                    logger.log({
+                        level: 'info',
+                        message: 'Translated Report ' +
+                            reportId +
+                            ' Saved Successfully to ' +
+                            lang +
+                            ' table!',
+                    });
                     break;
                 case 'ru':
                     yield prismaClient.cmi_RegionalRussian.create({
@@ -117,11 +152,14 @@ function Retry(reportId, translatedReport, lang) {
                             TransDate: today,
                         },
                     });
-                    console.log('Translated Report ' +
-                        reportId +
-                        ' Saved Successfully to ' +
-                        lang +
-                        ' table!');
+                    logger.log({
+                        level: 'info',
+                        message: 'Translated Report ' +
+                            reportId +
+                            ' Saved Successfully to ' +
+                            lang +
+                            ' table!',
+                    });
                     break;
                 case 'ja':
                     yield prismaClient.cmi_RegionalJapanese.create({
@@ -136,11 +174,14 @@ function Retry(reportId, translatedReport, lang) {
                             TransDate: today,
                         },
                     });
-                    console.log('Translated Report ' +
-                        reportId +
-                        ' Saved Successfully to ' +
-                        lang +
-                        ' table!');
+                    logger.log({
+                        level: 'info',
+                        message: 'Translated Report ' +
+                            reportId +
+                            ' Saved Successfully to ' +
+                            lang +
+                            ' table!',
+                    });
                     break;
                 case 'zh':
                     yield prismaClient.cmi_RegionalChinese.create({
@@ -155,11 +196,14 @@ function Retry(reportId, translatedReport, lang) {
                             TransDate: today,
                         },
                     });
-                    console.log('Translated Report ' +
-                        reportId +
-                        ' Saved Successfully to ' +
-                        lang +
-                        ' table!');
+                    logger.log({
+                        level: 'info',
+                        message: 'Translated Report ' +
+                            reportId +
+                            ' Saved Successfully to ' +
+                            lang +
+                            ' table!',
+                    });
                     break;
                 case 'ko':
                     yield prismaClient.cmi_RegionalKorean.create({
@@ -174,11 +218,14 @@ function Retry(reportId, translatedReport, lang) {
                             TransDate: today,
                         },
                     });
-                    console.log('Translated Report ' +
-                        reportId +
-                        ' Saved Successfully to ' +
-                        lang +
-                        ' table!');
+                    logger.log({
+                        level: 'info',
+                        message: 'Translated Report ' +
+                            reportId +
+                            ' Saved Successfully to ' +
+                            lang +
+                            ' table!',
+                    });
                     break;
                 case 'pt':
                     yield prismaClient.cmi_RegionalPortuguese.create({
@@ -193,11 +240,14 @@ function Retry(reportId, translatedReport, lang) {
                             TransDate: today,
                         },
                     });
-                    console.log('Translated Report ' +
-                        reportId +
-                        ' Saved Successfully to ' +
-                        lang +
-                        ' table!');
+                    logger.log({
+                        level: 'info',
+                        message: 'Translated Report ' +
+                            reportId +
+                            ' Saved Successfully to ' +
+                            lang +
+                            ' table!',
+                    });
                     break;
                 default:
                     console.log('No Locale was matched!');
@@ -205,7 +255,10 @@ function Retry(reportId, translatedReport, lang) {
             }
         }
         catch (err) {
-            console.log('Got error while saving the translated report to database!');
+            logger.log({
+                level: 'error',
+                message: 'Got error while saving the translated report to database :->' + err,
+            });
         }
     });
 }
@@ -236,38 +289,37 @@ function translateReport(reportId, lang) {
                 const res = yield axios.post('http://52.89.187.86/translate', data);
                 //Taking the translatedText array from the response
                 const translatedReport = res.data.translatedText;
-                console.log('Successfully Translated Report with ID ' + reportId + ' to ', lang);
+                logger.log({
+                    level: 'info',
+                    message: 'Successfully Translated Report with ID ' + reportId + ' to ',
+                    lang,
+                });
                 const today = new Date();
                 // Save the translated Text to the respective language table
                 try {
                     switch (lang) {
                         case 'fr':
-                            if (yield prismaClient.cmi_RegionalChinese.findUnique({
-                                where: { trid: reportId },
-                            })) {
-                                yield prismaClient.cmi_RegionalFrench.create({
-                                    data: {
-                                        rid: reportId,
-                                        meta_title: translatedReport[0],
-                                        meta_description: translatedReport[1],
-                                        meta_keywords: translatedReport[2],
-                                        newsSubject: translatedReport[3],
-                                        keyword: translatedReport[4],
-                                        Summary: translatedReport[5],
-                                        TransDate: today,
-                                    },
-                                });
-                                console.log('Translated Report ' +
+                            yield prismaClient.cmi_RegionalFrench.create({
+                                data: {
+                                    rid: reportId,
+                                    meta_title: translatedReport[0],
+                                    meta_description: translatedReport[1],
+                                    meta_keywords: translatedReport[2],
+                                    newsSubject: translatedReport[3],
+                                    keyword: translatedReport[4],
+                                    Summary: translatedReport[5],
+                                    TransDate: today,
+                                },
+                            });
+                            logger.log({
+                                level: 'info',
+                                message: 'Translated Report ' +
                                     reportId +
                                     ' Saved Successfully to ' +
                                     lang +
-                                    ' table!');
-                                break;
-                            }
-                            else {
-                                console.log(reportId, ' Report is already translated!');
-                                break;
-                            }
+                                    ' table!',
+                            });
+                            break;
                         case 'de':
                             yield prismaClient.cmi_RegionalGerman.create({
                                 data: {
@@ -281,11 +333,14 @@ function translateReport(reportId, lang) {
                                     TransDate: today,
                                 },
                             });
-                            console.log('Translated Report ' +
-                                reportId +
-                                ' Saved Successfully to ' +
-                                lang +
-                                ' table!');
+                            logger.log({
+                                level: 'info',
+                                message: 'Translated Report ' +
+                                    reportId +
+                                    ' Saved Successfully to ' +
+                                    lang +
+                                    ' table!',
+                            });
                             break;
                         case 'it':
                             yield prismaClient.cmi_RegionalItalian.create({
@@ -300,11 +355,14 @@ function translateReport(reportId, lang) {
                                     TransDate: today,
                                 },
                             });
-                            console.log('Translated Report ' +
-                                reportId +
-                                ' Saved Successfully to ' +
-                                lang +
-                                ' table!');
+                            logger.log({
+                                level: 'info',
+                                message: 'Translated Report ' +
+                                    reportId +
+                                    ' Saved Successfully to ' +
+                                    lang +
+                                    ' table!',
+                            });
                             break;
                         case 'ru':
                             yield prismaClient.cmi_RegionalRussian.create({
@@ -319,11 +377,14 @@ function translateReport(reportId, lang) {
                                     TransDate: today,
                                 },
                             });
-                            console.log('Translated Report ' +
-                                reportId +
-                                ' Saved Successfully to ' +
-                                lang +
-                                ' table!');
+                            logger.log({
+                                level: 'info',
+                                message: 'Translated Report ' +
+                                    reportId +
+                                    ' Saved Successfully to ' +
+                                    lang +
+                                    ' table!',
+                            });
                             break;
                         case 'ja':
                             yield prismaClient.cmi_RegionalJapanese.create({
@@ -338,11 +399,14 @@ function translateReport(reportId, lang) {
                                     TransDate: today,
                                 },
                             });
-                            console.log('Translated Report ' +
-                                reportId +
-                                ' Saved Successfully to ' +
-                                lang +
-                                ' table!');
+                            logger.log({
+                                level: 'info',
+                                message: 'Translated Report ' +
+                                    reportId +
+                                    ' Saved Successfully to ' +
+                                    lang +
+                                    ' table!',
+                            });
                             break;
                         case 'zh':
                             yield prismaClient.cmi_RegionalChinese.create({
@@ -357,11 +421,14 @@ function translateReport(reportId, lang) {
                                     TransDate: today,
                                 },
                             });
-                            console.log('Translated Report ' +
-                                reportId +
-                                ' Saved Successfully to ' +
-                                lang +
-                                ' table!');
+                            logger.log({
+                                level: 'info',
+                                message: 'Translated Report ' +
+                                    reportId +
+                                    ' Saved Successfully to ' +
+                                    lang +
+                                    ' table!',
+                            });
                             break;
                         case 'ko':
                             yield prismaClient.cmi_RegionalKorean.create({
@@ -376,11 +443,14 @@ function translateReport(reportId, lang) {
                                     TransDate: today,
                                 },
                             });
-                            console.log('Translated Report ' +
-                                reportId +
-                                ' Saved Successfully to ' +
-                                lang +
-                                ' table!');
+                            logger.log({
+                                level: 'info',
+                                message: 'Translated Report ' +
+                                    reportId +
+                                    ' Saved Successfully to ' +
+                                    lang +
+                                    ' table!',
+                            });
                             break;
                         case 'pt':
                             yield prismaClient.cmi_RegionalPortuguese.create({
@@ -395,29 +465,42 @@ function translateReport(reportId, lang) {
                                     TransDate: today,
                                 },
                             });
-                            console.log('Translated Report ' +
-                                reportId +
-                                ' Saved Successfully to ' +
-                                lang +
-                                ' table!');
+                            logger.log({
+                                level: 'info',
+                                message: 'Translated Report ' +
+                                    reportId +
+                                    ' Saved Successfully to ' +
+                                    lang +
+                                    ' table!',
+                            });
                             break;
                         default:
-                            console.log('No Locale was matched!');
+                            logger.log({ level: 'info', message: 'No Locale was matched!' });
                             break;
                     }
                     return true;
                 }
                 catch (err) {
-                    console.log('Got error while saving the translated report to database!', err);
-                    console.log('Retrying...!');
+                    logger.log({
+                        level: 'error',
+                        message: 'Got error while saving the translated report to database!' + err,
+                    });
+                    logger.log({ level: 'info', message: 'Retrying...!' });
                     //Retry saving the record to the database
                     yield Retry(reportId, translatedReport, lang);
                 }
             }
             catch (err) {
-                console.log('Unable to Translate the Report ' + reportId + ' to ' + lang);
-                console.log(err);
-                console.log('Retrying...!');
+                logger.log({
+                    level: 'error',
+                    message: 'Unable to Translate the Report ' +
+                        reportId +
+                        ' to ' +
+                        lang +
+                        ' error is :-> ' +
+                        err,
+                });
+                logger.log({ level: 'info', message: 'Retrying...!' });
                 if (RetryCount <= 3) {
                     //If translating server got the error while translating recalling the function recursively
                     const isRetried = yield translateReport(reportId, lang);
@@ -430,13 +513,20 @@ function translateReport(reportId, lang) {
                     }
                 }
                 else {
-                    console.log('Retry limit is Over! Failed to translating the Report Id : ', reportId);
+                    logger.log({
+                        level: 'info',
+                        message: 'Retry limit is Over! Failed to translating the Report Id : ' +
+                            reportId,
+                    });
                     return false;
                 }
             }
         }
         else {
-            console.log('Summary is not Present in the Report, So translation is skipped for the report!');
+            logger.log({
+                level: 'info',
+                message: 'Summary is not Present in the Report, So translation is skipped for the report!',
+            });
             return null;
         }
     });
@@ -447,43 +537,43 @@ function isReportTraslated(reportId, locale) {
             let report;
             switch (locale) {
                 case 'fr':
-                    report = yield prismaClient.cmi_RegionalFrench.findUnique({
-                        where: { trid: reportId },
+                    report = yield prismaClient.cmi_RegionalFrench.findFirst({
+                        where: { rid: reportId },
                     });
                     break;
                 case 'it':
-                    report = yield prismaClient.cmi_RegionalItalian.findUnique({
-                        where: { trid: reportId },
+                    report = yield prismaClient.cmi_RegionalItalian.findFirst({
+                        where: { rid: reportId },
                     });
                     break;
                 case 'de':
-                    report = yield prismaClient.cmi_RegionalGerman.findUnique({
-                        where: { trid: reportId },
+                    report = yield prismaClient.cmi_RegionalGerman.findFirst({
+                        where: { rid: reportId },
                     });
                     break;
                 case 'zh':
-                    report = yield prismaClient.cmi_RegionalChinese.findUnique({
-                        where: { trid: reportId },
+                    report = yield prismaClient.cmi_RegionalChinese.findFirst({
+                        where: { rid: reportId },
                     });
                     break;
                 case 'ru':
-                    report = yield prismaClient.cmi_RegionalRussian.findUnique({
-                        where: { trid: reportId },
+                    report = yield prismaClient.cmi_RegionalRussian.findFirst({
+                        where: { rid: reportId },
                     });
                     break;
                 case 'ko':
-                    report = yield prismaClient.cmi_RegionalKorean.findUnique({
-                        where: { trid: reportId },
+                    report = yield prismaClient.cmi_RegionalKorean.findFirst({
+                        where: { rid: reportId },
                     });
                     break;
                 case 'ja':
-                    report = yield prismaClient.cmi_RegionalJapanese.findUnique({
-                        where: { trid: reportId },
+                    report = yield prismaClient.cmi_RegionalJapanese.findFirst({
+                        where: { rid: reportId },
                     });
                     break;
                 case 'pt':
-                    report = yield prismaClient.cmi_RegionalPortuguese.findUnique({
-                        where: { trid: reportId },
+                    report = yield prismaClient.cmi_RegionalPortuguese.findFirst({
+                        where: { rid: reportId },
                     });
                     break;
                 default:
@@ -502,11 +592,11 @@ function isReportTraslated(reportId, locale) {
 function startTranslating() {
     return __awaiter(this, void 0, void 0, function* () {
         //Create the Request Limit
-        const limit = pLimit(1);
+        const limit = pLimit(30);
         const reportIds = yield prismaClient.cmi_reports.findMany({
             where: {
                 newsId: {
-                    lte: 10,
+                    lte: 15,
                 },
             },
             select: {
@@ -515,21 +605,25 @@ function startTranslating() {
         });
         // //First Loop for the Locales Array
         for (const locale of locales) {
-            console.log('###################### Translating the Report in ' +
-                locale +
-                ' #######################');
+            logger.log({
+                level: 'info',
+                message: '###################### Translating the Report in ' +
+                    locale +
+                    ' #######################',
+            });
             //Creating the Concurrent Request Promises for the Single Locale
             const promises = reportIds.map((id) => __awaiter(this, void 0, void 0, function* () {
                 if (yield isReportTraslated(id.newsId, locale)) {
                     console.log('Report with ID ' + id.newsId + ' is already translated!');
                     return;
                 }
-                limit(() => translateReport(id.newsId, locale));
+                else {
+                    return limit(() => translateReport(id.newsId, locale));
+                }
             }));
             //awaiting on the all promises created at a time for
             yield Promise.all(promises);
         }
     });
 }
-console.log(new Date());
 startTranslating();
