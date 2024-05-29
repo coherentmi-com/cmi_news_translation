@@ -1,6 +1,5 @@
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["relationJoins"]
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -10,7 +9,7 @@ datasource db {
 
 model cmi_RegionalChinese {
   trid                                Int       @id @default(autoincrement())
-  rid                                 Int
+  rid                                 Int       @unique(map: "rid_2")
   Summary                             String?   @db.Text
   newsSubject                         String    @db.VarChar(900)
   keyword                             String    @db.VarChar(400)
@@ -55,7 +54,7 @@ model cmi_RegionalChinese {
 
 model cmi_RegionalFrench {
   trid                                Int       @id @default(autoincrement())
-  rid                                 Int
+  rid                                 Int       @unique(map: "rid_2")
   Summary                             String?   @db.Text
   newsSubject                         String    @db.VarChar(900)
   keyword                             String    @db.VarChar(400)
@@ -100,7 +99,7 @@ model cmi_RegionalFrench {
 
 model cmi_RegionalGerman {
   trid                                Int       @id @default(autoincrement())
-  rid                                 Int
+  rid                                 Int       @unique(map: "rid_2")
   Summary                             String?   @db.Text
   newsSubject                         String    @db.VarChar(900)
   keyword                             String    @db.VarChar(400)
@@ -145,7 +144,7 @@ model cmi_RegionalGerman {
 
 model cmi_RegionalItalian {
   trid                                Int       @id @default(autoincrement())
-  rid                                 Int
+  rid                                 Int       @unique(map: "rid_2")
   Summary                             String?   @db.Text
   newsSubject                         String    @db.VarChar(900)
   keyword                             String    @db.VarChar(400)
@@ -190,7 +189,7 @@ model cmi_RegionalItalian {
 
 model cmi_RegionalJapanese {
   trid                                Int       @id @default(autoincrement())
-  rid                                 Int
+  rid                                 Int       @unique(map: "rid_2")
   Summary                             String?   @db.Text
   newsSubject                         String    @db.VarChar(900)
   keyword                             String    @db.VarChar(400)
@@ -235,7 +234,7 @@ model cmi_RegionalJapanese {
 
 model cmi_RegionalKorean {
   trid                                Int       @id @default(autoincrement())
-  rid                                 Int
+  rid                                 Int       @unique(map: "rid_2")
   Summary                             String?   @db.Text
   newsSubject                         String    @db.VarChar(900)
   keyword                             String    @db.VarChar(400)
@@ -280,7 +279,7 @@ model cmi_RegionalKorean {
 
 model cmi_RegionalPortuguese {
   trid                                Int       @id @default(autoincrement())
-  rid                                 Int
+  rid                                 Int       @unique(map: "rid_2")
   Summary                             String?   @db.Text
   newsSubject                         String    @db.VarChar(900)
   keyword                             String    @db.VarChar(400)
@@ -325,7 +324,7 @@ model cmi_RegionalPortuguese {
 
 model cmi_RegionalRussian {
   trid                                Int       @id @default(autoincrement())
-  rid                                 Int
+  rid                                 Int       @unique(map: "rid_2")
   Summary                             String?   @db.Text
   newsSubject                         String    @db.VarChar(900)
   keyword                             String    @db.VarChar(400)

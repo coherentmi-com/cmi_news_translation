@@ -25,19 +25,19 @@ const logger = winston.createLogger({
     })),
     transports: [
         new winston.transports.File({
-            filename: 'running.log',
+            filename: 'logs/running.log',
             level: 'info',
             options: { flags: 'w' },
         }),
         new winston.transports.File({
-            filename: 'error.log',
+            filename: 'logs/error.log',
             level: 'error',
             options: { flags: 'w' },
         }),
     ],
 });
 const prismaClient = new PrismaClient();
-let locales = ['ru'];
+let locales = ['fr', 'de', 'it', 'ru', 'pt', 'zh', 'ko', 'ja'];
 //Fetch the report From the database
 function getReport(id) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -61,8 +61,10 @@ function getReport(id) {
             return report;
         }
         catch (err) {
-            console.log(err);
-            console.log('Unable to fetch the Report!');
+            logger.log({
+                level: 'error',
+                message: 'Unable to fetch the Report!' + err,
+            });
         }
     });
 }
@@ -257,15 +259,23 @@ function Retry(reportId, translatedReport, lang) {
         catch (err) {
             logger.log({
                 level: 'error',
-                message: 'Got error while saving the translated report to database :->' + err,
+                message: 'Got error while Retrying to save the translated report to database :->' +
+                    err,
             });
         }
     });
 }
-let RetryCount = 0;
+let RetryCount = 1;
+let saveRetry = 1;
 // Translate the Single Report
 function translateReport(reportId, lang) {
     return __awaiter(this, void 0, void 0, function* () {
+        //Precheck if the report is already translated
+        const isPresent = yield isReportTraslated(reportId, lang);
+        if (isPresent) {
+            console.log('Report with ID ' + reportId + ' is already translated!');
+            return;
+        }
         //fetch the report from Database
         const report = yield getReport(reportId);
         if (report) {
@@ -478,7 +488,6 @@ function translateReport(reportId, lang) {
                             logger.log({ level: 'info', message: 'No Locale was matched!' });
                             break;
                     }
-                    return true;
                 }
                 catch (err) {
                     logger.log({
@@ -486,8 +495,15 @@ function translateReport(reportId, lang) {
                         message: 'Got error while saving the translated report to database!' + err,
                     });
                     logger.log({ level: 'info', message: 'Retrying...!' });
-                    //Retry saving the record to the database
-                    yield Retry(reportId, translatedReport, lang);
+                    if (saveRetry <= 3) {
+                        saveRetry += 1;
+                        //Retry saving the record to the database
+                        yield Retry(reportId, translatedReport, lang);
+                    }
+                    else {
+                        saveRetry = 0;
+                        return;
+                    }
                 }
             }
             catch (err) {
@@ -503,16 +519,11 @@ function translateReport(reportId, lang) {
                 logger.log({ level: 'info', message: 'Retrying...!' });
                 if (RetryCount <= 3) {
                     //If translating server got the error while translating recalling the function recursively
-                    const isRetried = yield translateReport(reportId, lang);
-                    if (isRetried) {
-                        return true;
-                    }
-                    else {
-                        RetryCount += 1;
-                        return false;
-                    }
+                    RetryCount += 1;
+                    yield translateReport(reportId, lang);
                 }
                 else {
+                    RetryCount = 0;
                     logger.log({
                         level: 'info',
                         message: 'Retry limit is Over! Failed to translating the Report Id : ' +
@@ -529,6 +540,13 @@ function translateReport(reportId, lang) {
             });
             return null;
         }
+    });
+}
+function sendToTranslate(reportId) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const limit = pLimit(8);
+        const promises = locales.map((locale) => limit(() => translateReport(reportId, locale)));
+        return yield Promise.all(promises);
     });
 }
 function isReportTraslated(reportId, locale) {
@@ -585,45 +603,34 @@ function isReportTraslated(reportId, locale) {
             return true;
         }
         catch (err) {
-            console.log(err);
+            logger.log({
+                message: 'Got error While checking if report is Alredy translated -> ' + err,
+                level: 'error',
+            });
         }
     });
 }
 function startTranslating() {
     return __awaiter(this, void 0, void 0, function* () {
         //Create the Request Limit
-        const limit = pLimit(30);
+        const limit = pLimit(1);
         const reportIds = yield prismaClient.cmi_reports.findMany({
             where: {
                 newsId: {
-                    lte: 15,
+                    lte: 25,
                 },
             },
             select: {
                 newsId: true,
             },
         });
-        // //First Loop for the Locales Array
-        for (const locale of locales) {
-            logger.log({
-                level: 'info',
-                message: '###################### Translating the Report in ' +
-                    locale +
-                    ' #######################',
-            });
-            //Creating the Concurrent Request Promises for the Single Locale
-            const promises = reportIds.map((id) => __awaiter(this, void 0, void 0, function* () {
-                if (yield isReportTraslated(id.newsId, locale)) {
-                    console.log('Report with ID ' + id.newsId + ' is already translated!');
-                    return;
-                }
-                else {
-                    return limit(() => translateReport(id.newsId, locale));
-                }
-            }));
-            //awaiting on the all promises created at a time for
-            yield Promise.all(promises);
-        }
+        //Creating the Concurrent Request Promises for the Single Locale
+        const promises = reportIds.map((id) => limit(() => sendToTranslate(id.newsId)));
+        console.log('From startTranslating -> Expected: 6916 Received:', limit.pendingCount);
+        //awaiting on the all promises created at a time for
+        yield Promise.all(promises);
+        console.log('Running Promises in start:', limit.activeCount);
+        console.log('All reports are translated in all languages!');
     });
 }
 startTranslating();

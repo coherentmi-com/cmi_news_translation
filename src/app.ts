@@ -22,12 +22,12 @@ const logger = winston.createLogger({
   ),
   transports: [
     new winston.transports.File({
-      filename: 'running.log',
+      filename: 'logs/running.log',
       level: 'info',
       options: { flags: 'w' },
     }),
     new winston.transports.File({
-      filename: 'error.log',
+      filename: 'logs/error.log',
       level: 'error',
       options: { flags: 'w' },
     }),
@@ -36,7 +36,7 @@ const logger = winston.createLogger({
 
 const prismaClient = new PrismaClient();
 
-let locales = ['ru'];
+let locales = ['fr', 'de', 'it', 'ru', 'pt', 'zh', 'ko', 'ja'];
 
 //Fetch the report From the database
 async function getReport(id: number) {
@@ -61,8 +61,10 @@ async function getReport(id: number) {
 
     return report;
   } catch (err) {
-    console.log(err);
-    console.log('Unable to fetch the Report!');
+    logger.log({
+      level: 'error',
+      message: 'Unable to fetch the Report!' + err,
+    });
   }
 }
 
@@ -277,15 +279,24 @@ async function Retry(
     logger.log({
       level: 'error',
       message:
-        'Got error while saving the translated report to database :->' + err,
+        'Got error while Retrying to save the translated report to database :->' +
+        err,
     });
   }
 }
 
-let RetryCount = 0;
+let RetryCount = 1;
+let saveRetry = 1;
 
 // Translate the Single Report
 async function translateReport(reportId: number, lang: string) {
+  //Precheck if the report is already translated
+  const isPresent = await isReportTraslated(reportId, lang);
+  if (isPresent) {
+    console.log('Report with ID ' + reportId + ' is already translated!');
+    return;
+  }
+
   //fetch the report from Database
   const report = await getReport(reportId);
 
@@ -316,8 +327,8 @@ async function translateReport(reportId: number, lang: string) {
 
       logger.log({
         level: 'info',
-        message: 'Successfully Translated Report with ID ' + reportId + ' to ',
-        lang,
+        message:
+          'Successfully Translated Report with ID ' + reportId + ' to ' + lang,
       });
 
       const today = new Date();
@@ -521,7 +532,6 @@ async function translateReport(reportId: number, lang: string) {
             logger.log({ level: 'info', message: 'No Locale was matched!' });
             break;
         }
-        return true;
       } catch (err) {
         logger.log({
           level: 'error',
@@ -530,8 +540,14 @@ async function translateReport(reportId: number, lang: string) {
         });
         logger.log({ level: 'info', message: 'Retrying...!' });
 
-        //Retry saving the record to the database
-        await Retry(reportId, translatedReport, lang);
+        if (saveRetry <= 3) {
+          saveRetry += 1;
+          //Retry saving the record to the database
+          await Retry(reportId, translatedReport, lang);
+        } else {
+          saveRetry = 0;
+          return;
+        }
       }
     } catch (err) {
       logger.log({
@@ -548,15 +564,10 @@ async function translateReport(reportId: number, lang: string) {
 
       if (RetryCount <= 3) {
         //If translating server got the error while translating recalling the function recursively
-        const isRetried = await translateReport(reportId, lang);
-
-        if (isRetried) {
-          return true;
-        } else {
-          RetryCount += 1;
-          return false;
-        }
+        RetryCount += 1;
+        await translateReport(reportId, lang);
       } else {
+        RetryCount = 0;
         logger.log({
           level: 'info',
           message:
@@ -574,6 +585,15 @@ async function translateReport(reportId: number, lang: string) {
     });
     return null;
   }
+}
+
+async function sendToTranslate(reportId: number) {
+  const limit = pLimit(8);
+
+  const promises = locales.map((locale) =>
+    limit(() => translateReport(reportId, locale))
+  );
+  return await Promise.all(promises);
 }
 
 async function isReportTraslated(reportId: number, locale: string) {
@@ -630,47 +650,39 @@ async function isReportTraslated(reportId: number, locale: string) {
 
     return true;
   } catch (err) {
-    console.log(err);
+    logger.log({
+      message:
+        'Got error While checking if report is Alredy translated -> ' + err,
+      level: 'error',
+    });
   }
 }
 
 async function startTranslating() {
   //Create the Request Limit
-  const limit = pLimit(30);
-
-  const reportIds = await prismaClient.cmi_reports.findMany({
-    where: {
-      newsId: {
-        lte: 15,
+  const limit = pLimit(1);
+  try {
+    const reportIds = await prismaClient.cmi_reports.findMany({
+      select: {
+        newsId: true,
       },
-    },
-    select: {
-      newsId: true,
-    },
-  });
-
-  // //First Loop for the Locales Array
-  for (const locale of locales) {
-    logger.log({
-      level: 'info',
-      message:
-        '###################### Translating the Report in ' +
-        locale +
-        ' #######################',
     });
 
     //Creating the Concurrent Request Promises for the Single Locale
-    const promises = reportIds.map(async (id: any) => {
-      if (await isReportTraslated(id.newsId, locale)) {
-        console.log('Report with ID ' + id.newsId + ' is already translated!');
-        return;
-      } else {
-        return limit(() => translateReport(id.newsId, locale));
-      }
-    });
+    const promises = reportIds.map((id: any) =>
+      limit(() => sendToTranslate(id.newsId))
+    );
 
+    console.log(
+      'From startTranslating -> Expected: 6916 Received:',
+      limit.pendingCount
+    );
     //awaiting on the all promises created at a time for
     await Promise.all(promises);
+
+    console.log('All reports are translated in all languages!');
+  } catch (err) {
+    throw new Error('Error while Running Script! Please Try Again :' + err);
   }
 }
 
