@@ -301,8 +301,7 @@ function translateReport(reportId, lang) {
                 const translatedReport = res.data.translatedText;
                 logger.log({
                     level: 'info',
-                    message: 'Successfully Translated Report with ID ' + reportId + ' to ',
-                    lang,
+                    message: 'Successfully Translated Report with ID ' + reportId + ' to ' + lang,
                 });
                 const today = new Date();
                 // Save the translated Text to the respective language table
@@ -614,23 +613,22 @@ function startTranslating() {
     return __awaiter(this, void 0, void 0, function* () {
         //Create the Request Limit
         const limit = pLimit(1);
-        const reportIds = yield prismaClient.cmi_reports.findMany({
-            where: {
-                newsId: {
-                    lte: 25,
+        try {
+            const reportIds = yield prismaClient.cmi_reports.findMany({
+                select: {
+                    newsId: true,
                 },
-            },
-            select: {
-                newsId: true,
-            },
-        });
-        //Creating the Concurrent Request Promises for the Single Locale
-        const promises = reportIds.map((id) => limit(() => sendToTranslate(id.newsId)));
-        console.log('From startTranslating -> Expected: 6916 Received:', limit.pendingCount);
-        //awaiting on the all promises created at a time for
-        yield Promise.all(promises);
-        console.log('Running Promises in start:', limit.activeCount);
-        console.log('All reports are translated in all languages!');
+            });
+            //Creating the Concurrent Request Promises for the Single Locale
+            const promises = reportIds.map((id) => limit(() => sendToTranslate(id.newsId)));
+            console.log('From startTranslating -> Expected: 6916 Received:', limit.pendingCount);
+            //awaiting on the all promises created at a time for
+            yield Promise.all(promises);
+            console.log('All reports are translated in all languages!');
+        }
+        catch (err) {
+            throw new Error('Error while Running Script! Please Try Again :' + err);
+        }
     });
 }
 startTranslating();

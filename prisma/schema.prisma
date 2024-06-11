@@ -438,3 +438,321 @@ model cmi_reportsummery {
 
   @@index([nid], map: "nid")
 }
+
+model cmi_cmifaq {
+  fid Int     @id @default(autoincrement())
+  rid Int
+  q1  String? @db.VarChar(800)
+  q2  String? @db.VarChar(800)
+  q3  String? @db.VarChar(800)
+  q4  String? @db.VarChar(800)
+  q5  String? @db.VarChar(800)
+  q6  String? @db.VarChar(800)
+  a1  String? @db.VarChar(800)
+  a2  String? @db.VarChar(800)
+  a3  String? @db.VarChar(800)
+  a4  String? @db.VarChar(800)
+  a5  String? @db.VarChar(800)
+  a6  String? @db.VarChar(800)
+
+  @@index([a1(length: 250)], map: "a1")
+  @@index([a2(length: 250)], map: "a2")
+  @@index([a3(length: 250)], map: "a3")
+  @@index([a4(length: 250)], map: "a4")
+  @@index([a5(length: 250)], map: "a5")
+  @@index([a6(length: 250)], map: "a6")
+  @@index([q1(length: 250)], map: "q1")
+  @@index([q2(length: 250)], map: "q2")
+  @@index([q3(length: 250)], map: "q3")
+  @@index([q4(length: 250)], map: "q4")
+  @@index([q5(length: 250)], map: "q5")
+  @@index([q6(length: 250)], map: "q6")
+  @@index([rid], map: "rid")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model cmi_cmifaq_translation_de {
+  fid            Int      @id @default(autoincrement())
+  rid            Int      @unique(map: "unique key")
+  q1             String?  @db.VarChar(800)
+  q2             String?  @db.VarChar(800)
+  q3             String?  @db.VarChar(800)
+  q4             String?  @db.VarChar(800)
+  q5             String?  @db.VarChar(800)
+  q6             String?  @db.VarChar(800)
+  a1             String?  @db.Text
+  a2             String?  @db.Text
+  a3             String?  @db.Text
+  a4             String?  @db.Text
+  a5             String?  @db.Text
+  a6             String?  @db.Text
+  translatedDate DateTime @default(now()) @db.Date
+  updatedDate    DateTime @default(now()) @db.Date
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model cmi_cmifaq_translation_fr {
+  fid            Int      @id @default(autoincrement())
+  rid            Int      @unique(map: "unique key")
+  q1             String?  @db.VarChar(800)
+  q2             String?  @db.VarChar(800)
+  q3             String?  @db.VarChar(800)
+  q4             String?  @db.VarChar(800)
+  q5             String?  @db.VarChar(800)
+  q6             String?  @db.VarChar(800)
+  a1             String?  @db.Text
+  a2             String?  @db.Text
+  a3             String?  @db.Text
+  a4             String?  @db.Text
+  a5             String?  @db.Text
+  a6             String?  @db.Text
+  translatedDate DateTime @default(now()) @db.Date
+  updatedDate    DateTime @default(now()) @db.Date
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model cmi_cmifaq_translation_it {
+  fid            Int      @id @default(autoincrement())
+  rid            Int      @unique(map: "unique key")
+  q1             String?  @db.VarChar(800)
+  q2             String?  @db.VarChar(800)
+  q3             String?  @db.VarChar(800)
+  q4             String?  @db.VarChar(800)
+  q5             String?  @db.VarChar(800)
+  q6             String?  @db.VarChar(800)
+  a1             String?  @db.Text
+  a2             String?  @db.Text
+  a3             String?  @db.Text
+  a4             String?  @db.Text
+  a5             String?  @db.Text
+  a6             String?  @db.Text
+  translatedDate DateTime @default(now()) @db.Date
+  updatedDate    DateTime @default(now()) @db.Date
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model cmi_cmifaq_translation_ja {
+  fid            Int      @id @default(autoincrement())
+  rid            Int      @unique(map: "unique key")
+  q1             String?  @db.VarChar(800)
+  q2             String?  @db.VarChar(800)
+  q3             String?  @db.VarChar(800)
+  q4             String?  @db.VarChar(800)
+  q5             String?  @db.VarChar(800)
+  q6             String?  @db.VarChar(800)
+  a1             String?  @db.Text
+  a2             String?  @db.Text
+  a3             String?  @db.Text
+  a4             String?  @db.Text
+  a5             String?  @db.Text
+  a6             String?  @db.Text
+  translatedDate DateTime @default(now()) @db.Date
+  updatedDate    DateTime @default(now()) @db.Date
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model cmi_cmifaq_translation_ko {
+  fid            Int      @id @default(autoincrement())
+  rid            Int      @unique(map: "unique key")
+  q1             String?  @db.VarChar(800)
+  q2             String?  @db.VarChar(800)
+  q3             String?  @db.VarChar(800)
+  q4             String?  @db.VarChar(800)
+  q5             String?  @db.VarChar(800)
+  q6             String?  @db.VarChar(800)
+  a1             String?  @db.Text
+  a2             String?  @db.Text
+  a3             String?  @db.Text
+  a4             String?  @db.Text
+  a5             String?  @db.Text
+  a6             String?  @db.Text
+  translatedDate DateTime @default(now()) @db.Date
+  updatedDate    DateTime @default(now()) @db.Date
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model cmi_cmifaq_translation_pt {
+  fid            Int      @id @default(autoincrement())
+  rid            Int      @unique(map: "unique key")
+  q1             String?  @db.VarChar(800)
+  q2             String?  @db.VarChar(800)
+  q3             String?  @db.VarChar(800)
+  q4             String?  @db.VarChar(800)
+  q5             String?  @db.VarChar(800)
+  q6             String?  @db.VarChar(800)
+  a1             String?  @db.Text
+  a2             String?  @db.Text
+  a3             String?  @db.Text
+  a4             String?  @db.Text
+  a5             String?  @db.Text
+  a6             String?  @db.Text
+  translatedDate DateTime @default(now()) @db.Date
+  updatedDate    DateTime @default(now()) @db.Date
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model cmi_cmifaq_translation_ru {
+  fid            Int      @id @default(autoincrement())
+  rid            Int      @unique(map: "unique key")
+  q1             String?  @db.VarChar(800)
+  q2             String?  @db.VarChar(800)
+  q3             String?  @db.VarChar(800)
+  q4             String?  @db.VarChar(800)
+  q5             String?  @db.VarChar(800)
+  q6             String?  @db.VarChar(800)
+  a1             String?  @db.Text
+  a2             String?  @db.Text
+  a3             String?  @db.Text
+  a4             String?  @db.Text
+  a5             String?  @db.Text
+  a6             String?  @db.Text
+  translatedDate DateTime @default(now()) @db.Date
+  updatedDate    DateTime @default(now()) @db.Date
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model cmi_cmifaq_translation_zh {
+  fid            Int      @id @default(autoincrement())
+  rid            Int      @unique(map: "unique key")
+  q1             String?  @db.VarChar(800)
+  q2             String?  @db.VarChar(800)
+  q3             String?  @db.VarChar(800)
+  q4             String?  @db.VarChar(800)
+  q5             String?  @db.VarChar(800)
+  q6             String?  @db.VarChar(800)
+  a1             String?  @db.Text
+  a2             String?  @db.Text
+  a3             String?  @db.Text
+  a4             String?  @db.Text
+  a5             String?  @db.Text
+  a6             String?  @db.Text
+  translatedDate DateTime @default(now()) @db.Date
+  updatedDate    DateTime @default(now()) @db.Date
+}
+
+model cmi_news {
+  id             BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  rid            Int      @default(0)
+  pub_date       DateTime @default(dbgenerated("('0000-00-00')")) @db.Date
+  view_desc      String   @db.LongText
+  title          String   @db.Text
+  IsActive       Int      @default(1)
+  CustomName     String   @default("") @db.VarChar(200)
+  ModifiedDate   DateTime @default(dbgenerated("('0000-00-00 00:00:00')")) @db.DateTime(0)
+  createddate    DateTime @default(dbgenerated("('0000-00-00 00:00:00')")) @db.DateTime(0)
+  prmetatitle    String?  @db.VarChar(400)
+  prmetadesc     String?  @db.Text
+  prmetakeywords String?  @db.Text
+  admin_id       Int
+
+  @@index([IsActive], map: "IsActive")
+  @@index([createddate], map: "createddate")
+  @@index([id], map: "id")
+  @@index([id, rid, CustomName], map: "id_2")
+  @@index([pub_date], map: "pub_date")
+  @@index([title(length: 100)], map: "title")
+}
+
+model cmi_news_de {
+  prid               Int       @id @default(autoincrement())
+  reportId           Int?
+  prmeta_title       String?   @db.VarChar(255)
+  prmeta_description String?   @db.VarChar(255)
+  prmeta_keywords    String?   @db.VarChar(255)
+  view_desc          String?   @db.LongText
+  title              String?   @db.Text
+  translated_date    DateTime? @default(now()) @db.DateTime(0)
+
+  @@index([reportId], map: "reportId")
+}
+
+model cmi_news_fr {
+  prid               Int       @id @default(autoincrement())
+  reportId           Int?
+  prmeta_title       String?   @db.VarChar(255)
+  prmeta_description String?   @db.VarChar(255)
+  prmeta_keywords    String?   @db.VarChar(255)
+  view_desc          String?   @db.LongText
+  title              String?   @db.Text
+  translated_date    DateTime? @default(now()) @db.DateTime(0)
+
+  @@index([reportId], map: "reportId")
+}
+
+model cmi_news_it {
+  prid               Int       @id @default(autoincrement())
+  reportId           Int?
+  prmeta_title       String?   @db.VarChar(255)
+  prmeta_description String?   @db.VarChar(255)
+  prmeta_keywords    String?   @db.VarChar(255)
+  view_desc          String?   @db.LongText
+  title              String?   @db.Text
+  translated_date    DateTime? @default(now()) @db.DateTime(0)
+
+  @@index([reportId], map: "reportId")
+}
+
+model cmi_news_ja {
+  prid               Int       @id @default(autoincrement())
+  reportId           Int?
+  prmeta_title       String?   @db.VarChar(255)
+  prmeta_description String?   @db.VarChar(255)
+  prmeta_keywords    String?   @db.VarChar(255)
+  view_desc          String?   @db.LongText
+  title              String?   @db.Text
+  translated_date    DateTime? @default(now()) @db.DateTime(0)
+
+  @@index([reportId], map: "reportId")
+}
+
+model cmi_news_ko {
+  prid               Int       @id @default(autoincrement())
+  reportId           Int?
+  prmeta_title       String?   @db.VarChar(255)
+  prmeta_description String?   @db.VarChar(255)
+  prmeta_keywords    String?   @db.VarChar(255)
+  view_desc          String?   @db.LongText
+  title              String?   @db.Text
+  translated_date    DateTime? @default(now()) @db.DateTime(0)
+
+  @@index([reportId], map: "reportId")
+}
+
+model cmi_news_pt {
+  prid               Int       @id @default(autoincrement())
+  reportId           Int?
+  prmeta_title       String?   @db.VarChar(255)
+  prmeta_description String?   @db.VarChar(255)
+  prmeta_keywords    String?   @db.VarChar(255)
+  view_desc          String?   @db.LongText
+  title              String?   @db.Text
+  translated_date    DateTime? @default(now()) @db.DateTime(0)
+
+  @@index([reportId], map: "reportId")
+}
+
+model cmi_news_ru {
+  prid               Int       @id @default(autoincrement())
+  reportId           Int?
+  prmeta_title       String?   @db.VarChar(255)
+  prmeta_description String?   @db.VarChar(255)
+  prmeta_keywords    String?   @db.VarChar(255)
+  view_desc          String?   @db.LongText
+  title              String?   @db.Text
+  translated_date    DateTime? @default(now()) @db.DateTime(0)
+
+  @@index([reportId], map: "reportId")
+}
+
+model cmi_news_zh {
+  prid               Int       @id @default(autoincrement())
+  reportId           Int?
+  prmeta_title       String?   @db.VarChar(255)
+  prmeta_description String?   @db.VarChar(255)
+  prmeta_keywords    String?   @db.VarChar(255)
+  view_desc          String?   @db.LongText
+  title              String?   @db.Text
+  translated_date    DateTime? @default(now()) @db.DateTime(0)
+
+  @@index([reportId], map: "reportId")
+}
